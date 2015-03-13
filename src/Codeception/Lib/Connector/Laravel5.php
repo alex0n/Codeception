@@ -45,7 +45,7 @@ class Laravel5 extends Client implements HttpKernelInterface, TerminableInterfac
      * @param bool $catch
      * @return Response
      */
-    public function handle(DomRequest $request, $type = self::MASTER_REQUEST, $catch = true)
+    public function handle(DomRequest $request, $type = self::MASTER_REQUEST, $catch = true) 
     {
         $request = Request::createFromBase($request);
         $request->enableHttpMethodParameterOverride();
@@ -55,16 +55,29 @@ class Laravel5 extends Client implements HttpKernelInterface, TerminableInterfac
         return $this->httpKernel->handle($request);
     }
 
-    /**
-     * Terminates a request/response cycle.
+	/**
+	 * Terminates a request/response cycle.
+	 *
+	 * @param DomRequest $request A Request instance
+	 * @param Response $response A Response instance
+	 *
+	 * @api
+	 */
+	public function terminate(DomRequest $request, Response $response)
+	{
+		$this->httpKernel->terminate(Request::createFromBase($request), $response);
+	}
+
+	/**
+     * Build Laravel5 request based on provided request instance
      *
-     * @param DomRequest $request A Request instance
-     * @param Response $response A Response instance
+     * @param DomRequest $request A DomRequest instance
      *
-     * @api
+     * @return Response A Response instance
      */
-    public function terminate(DomRequest $request, Response $response)
+    protected function doRequest($request)
     {
-        $this->httpKernel->terminate($request, $response);
+        return parent::doRequest(Request::createFromBase($request));
     }
+
 }
